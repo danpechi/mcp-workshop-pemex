@@ -109,33 +109,9 @@ test_databricks_connection() {
     fi
 }
 
-# Function to install missing dependencies
+# Function to install missing dependencies in a virtual environment
 install_dependencies() {
-    print_header "🔧 Checking and installing dependencies..."
-
-    # Check for databricks CLI
-    if ! command -v databricks &> /dev/null; then
-        print_progress "Installing Databricks CLI..."
-        if command -v pip &> /dev/null; then
-            pip install databricks-cli
-        elif command -v pip3 &> /dev/null; then
-            pip3 install databricks-cli
-        else
-            print_error "pip not found. Please install Python and pip first."
-            exit 1
-        fi
-        print_status "Databricks CLI installed"
-    else
-        print_status "Databricks CLI found"
-    fi
-
-    # Check for Node.js/npm for frontend
-    if ! command -v node &> /dev/null; then
-        print_warning "Node.js not found. You'll need it for local frontend development."
-        print_info "Visit: https://nodejs.org/ to install Node.js"
-    else
-        print_status "Node.js found"
-    fi
+    print_header "🔧 Setting up dependencies and virtual environment..."
 
     # Check for Python
     if ! command -v python3 &> /dev/null; then
@@ -144,6 +120,100 @@ install_dependencies() {
     else
         print_status "Python 3 found"
     fi
+
+    # Create virtual environment if it doesn't exist
+    if [ ! -d ".venv" ]; then
+        print_progress "Creating Python virtual environment..."
+        python3 -m venv .venv
+        print_status "Virtual environment created"
+    else
+        print_status "Virtual environment found"
+    fi
+
+    # Activate virtual environment
+    print_progress "Activating virtual environment..."
+    source .venv/bin/activate
+    export PATH=".venv/bin:$PATH"
+    print_status "Virtual environment activated"
+
+    # Upgrade pip
+    print_progress "Upgrading pip..."
+    pip install --upgrade pip
+
+    # Install Python dependencies
+    print_progress "Installing Python dependencies..."
+    if [ -f "requirements.txt" ]; then
+        pip install -r requirements.txt
+    else
+        pip install databricks-cli python-terraform
+    fi
+
+    # Check for Terraform and install if needed
+    if ! command -v terraform &> /dev/null; then
+        print_progress "Installing Terraform..."
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS - try to install via Homebrew first, fallback to direct download
+            if command -v brew &> /dev/null; then
+                brew install terraform
+            else
+                print_info "Installing Terraform directly (Homebrew not found)..."
+                # Download and install Terraform for macOS
+                TERRAFORM_VERSION="1.6.6"
+                curl -o terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_darwin_amd64.zip"
+                unzip terraform.zip
+                mkdir -p .venv/bin
+                mv terraform .venv/bin/
+                rm terraform.zip
+                chmod +x .venv/bin/terraform
+            fi
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            # Linux
+            print_info "Installing Terraform for Linux..."
+            TERRAFORM_VERSION="1.6.6"
+            curl -o terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
+            unzip terraform.zip
+            mkdir -p .venv/bin
+            mv terraform .venv/bin/
+            rm terraform.zip
+            chmod +x .venv/bin/terraform
+        else
+            print_warning "Unsupported OS for automatic Terraform installation"
+            print_info "Please install Terraform manually: https://developer.hashicorp.com/terraform/downloads"
+        fi
+        print_status "Terraform installed"
+    else
+        print_status "Terraform found"
+    fi
+
+    # Verify Databricks CLI
+    if ! command -v databricks &> /dev/null; then
+        print_error "Databricks CLI installation failed"
+        exit 1
+    else
+        DATABRICKS_VERSION=$(databricks --version 2>/dev/null || echo "unknown")
+        print_status "Databricks CLI found: $DATABRICKS_VERSION"
+    fi
+
+    # Verify Terraform
+    if ! command -v terraform &> /dev/null; then
+        print_error "Terraform installation failed"
+        print_info "Please install Terraform manually: https://developer.hashicorp.com/terraform/downloads"
+        exit 1
+    else
+        TERRAFORM_VERSION=$(terraform --version | head -1 | cut -d' ' -f2 2>/dev/null || echo "unknown")
+        print_status "Terraform found: $TERRAFORM_VERSION"
+    fi
+
+    # Check for Node.js/npm for frontend
+    if ! command -v node &> /dev/null; then
+        print_warning "Node.js not found. You'll need it for local frontend development."
+        print_info "Visit: https://nodejs.org/ to install Node.js"
+    else
+        NODE_VERSION=$(node --version 2>/dev/null || echo "unknown")
+        print_status "Node.js found: $NODE_VERSION"
+    fi
+
+    print_status "All dependencies verified"
 }
 
 # Main setup function
@@ -343,7 +413,12 @@ EOF
 
     print_progress "Deploying Databricks bundle (workshop app + MCP server)..."
     
-    # Ensure environment variables are available for bundle deployment
+    # Ensure virtual environment is activated and environment variables are available
+    if [ -f ".venv/bin/activate" ]; then
+        source .venv/bin/activate
+        export PATH=".venv/bin:$PATH"
+    fi
+    
     if [ -f ".env.local" ]; then
         source .env.local
         
@@ -556,6 +631,12 @@ EOF
     echo "   • .env.local - Your workshop configuration"
     echo "   • .participant_${CLEAN_PREFIX}.info - Participant info for cleanup"
     echo "   • frontend/.env.local - Frontend configuration"
+    echo "   • .venv/ - Python virtual environment with all dependencies"
+    echo ""
+    echo -e "${CYAN}💡 Important Notes:${NC}"
+    echo "   • All Databricks CLI and Terraform commands are available in the virtual environment"
+    echo "   • To activate manually: source .venv/bin/activate"
+    echo "   • Virtual environment includes: Databricks CLI, Terraform, and Python tools"
     echo ""
     echo -e "${GREEN}Happy learning with Databricks MCP! 🚀${NC}"
 

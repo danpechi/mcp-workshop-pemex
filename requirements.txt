@@ -1,0 +1,10 @@
+# Databricks MCP Workshop Dependencies
+# Core Databricks tools
+databricks-cli>=0.18.0
+
+# Development and testing tools
+python-terraform>=0.10.1
+
+# Optional: Additional utilities
+requests>=2.31.0
+pyyaml>=6.0
