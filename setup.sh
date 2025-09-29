@@ -351,6 +351,40 @@ EOF
         # Run the MCP-specific setup
         if [ -f "setup_workshop_mcp.sh" ]; then
             print_progress "Configuring custom MCP server template..."
+            # Ensure DATABRICKS_HOST is available
+            if [ -z "$DATABRICKS_HOST" ]; then
+                source ../.env.local 2>/dev/null || true
+                # If still empty and using profile auth, get from databricks config
+                if [ -z "$DATABRICKS_HOST" ] && [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+                    # Try to get host from databricks config file
+                    if [ -f ~/.databrickscfg ]; then
+                        # First try the configured profile
+                        if [ -n "$DATABRICKS_CONFIG_PROFILE" ]; then
+                            DATABRICKS_HOST=$(grep -A 10 "\[$DATABRICKS_CONFIG_PROFILE\]" ~/.databrickscfg | grep "^host" | head -1 | cut -d'=' -f2 | xargs)
+                        fi
+
+                        # If still empty, try common profile names
+                        if [ -z "$DATABRICKS_HOST" ]; then
+                            for profile in "DEFAULT" "default" "dev" "development" "staging" "prod" "production"; do
+                                DATABRICKS_HOST=$(grep -A 10 "\[$profile\]" ~/.databrickscfg | grep "^host" | head -1 | cut -d'=' -f2 | xargs 2>/dev/null)
+                                if [ -n "$DATABRICKS_HOST" ]; then
+                                    break
+                                fi
+                            done
+                        fi
+
+                        # If still empty, try any profile with a host
+                        if [ -z "$DATABRICKS_HOST" ]; then
+                            DATABRICKS_HOST=$(grep "^host" ~/.databrickscfg | head -1 | cut -d'=' -f2 | xargs 2>/dev/null)
+                        fi
+                    fi
+                    # If still empty, try to get from workspace info
+                    if [ -z "$DATABRICKS_HOST" ]; then
+                        DATABRICKS_HOST=$(databricks workspace get-status 2>/dev/null | grep -o 'https://[^[:space:]]*' | head -1 || echo "")
+                    fi
+                fi
+                export DATABRICKS_HOST
+            fi
             print_info "Parameters: ${CLEAN_PREFIX}, ${MCP_SERVER_NAME}, ${DATABRICKS_HOST}"
             ./setup_workshop_mcp.sh "${CLEAN_PREFIX}" "${MCP_SERVER_NAME}" "${DATABRICKS_HOST}"
             print_status "Custom MCP server template configured"
