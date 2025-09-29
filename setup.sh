@@ -209,8 +209,8 @@ main() {
         fi
 
         echo "Choose authentication method:"
-        echo "1. Personal Access Token (PAT) - Recommended"
-        echo "2. Configuration Profile"
+        echo "1. Personal Access Token (PAT)"
+        echo "2. Configuration Profile - Recommended"
         echo ""
 
         read -p "$(echo -e "${BLUE}❓${NC} Select option (1 or 2): ")" auth_choice
@@ -246,6 +246,10 @@ main() {
 
             if ! test_databricks_connection; then
                 print_error "Authentication failed. Please check your host URL and token."
+                print_info "Please verify:"
+                print_info "  1. Your Databricks workspace URL is correct: $DATABRICKS_HOST"
+                print_info "  2. Your Personal Access Token is valid and not expired"
+                print_info "  3. You have permissions to create resources in the workspace"
                 exit 1
             fi
 
@@ -264,13 +268,31 @@ main() {
             fi
             echo ""
 
-            prompt_with_default "Databricks Config Profile" "${DATABRICKS_CONFIG_PROFILE:-DEFAULT}" "DATABRICKS_CONFIG_PROFILE"
+            # Detect OAuth profiles (avoid token-based profiles)
+            OAUTH_PROFILES=$(grep -A 2 '^\[' ~/.databrickscfg 2>/dev/null | grep -B 1 'auth_type.*databricks-cli' | grep '^\[' | sed 's/\[//g' | sed 's/\]//g' | head -3 | tr '\n' ' ')
+            
+            if [ -n "$OAUTH_PROFILES" ]; then
+                SUGGESTED_PROFILE=$(echo "$OAUTH_PROFILES" | awk '{print $1}')
+                print_info "Detected OAuth profiles: $OAUTH_PROFILES"
+                print_info "Recommending: $SUGGESTED_PROFILE (uses OAuth, not PAT)"
+                prompt_with_default "Databricks Config Profile" "${SUGGESTED_PROFILE}" "DATABRICKS_CONFIG_PROFILE"
+            else
+                prompt_with_default "Databricks Config Profile" "${DATABRICKS_CONFIG_PROFILE:-DEFAULT}" "DATABRICKS_CONFIG_PROFILE"
+            fi
 
             update_env_value "DATABRICKS_CONFIG_PROFILE" "$DATABRICKS_CONFIG_PROFILE" "Databricks profile name"
 
-            # Clear PAT credentials when using profile
-            update_env_value "DATABRICKS_HOST" ""
-            update_env_value "DATABRICKS_TOKEN" ""
+            # Clear PAT credentials when using profile to avoid conflicts
+            # Remove the lines entirely from .env.local to prevent conflicts
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                # macOS sed
+                sed -i '' '/^DATABRICKS_HOST=/d' .env.local 2>/dev/null || true
+                sed -i '' '/^DATABRICKS_TOKEN=/d' .env.local 2>/dev/null || true
+            else
+                # Linux sed
+                sed -i '/^DATABRICKS_HOST=/d' .env.local 2>/dev/null || true
+                sed -i '/^DATABRICKS_TOKEN=/d' .env.local 2>/dev/null || true
+            fi
 
             # Test profile authentication
             if ! test_databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
@@ -320,25 +342,112 @@ EOF
     print_info "This will create your personal workshop resources..."
 
     print_progress "Deploying Databricks bundle (workshop app + MCP server)..."
-    if databricks bundle deploy -t dev \
-        --var="participant_prefix=${CLEAN_PREFIX}" \
-        --var="workshop_catalog=${WORKSHOP_CATALOG}" \
-        --var="app_name=${WORKSHOP_APP_NAME}" \
-        --var="mcp_server_name=${MCP_SERVER_NAME}"; then
-        print_status "Bundle deployed successfully"
+    
+    # Ensure environment variables are available for bundle deployment
+    if [ -f ".env.local" ]; then
+        source .env.local
+        
+        # Clean up conflicting environment variables based on auth type
+        if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+            # For profile auth, completely unset PAT credentials to avoid conflicts
+            unset DATABRICKS_HOST
+            unset DATABRICKS_TOKEN
+            export DATABRICKS_CONFIG_PROFILE
+            # Also clear from current shell environment
+            export -n DATABRICKS_HOST DATABRICKS_TOKEN 2>/dev/null || true
+        else
+            # For PAT auth, unset profile to avoid conflicts
+            unset DATABRICKS_CONFIG_PROFILE
+            export DATABRICKS_HOST DATABRICKS_TOKEN
+            export -n DATABRICKS_CONFIG_PROFILE 2>/dev/null || true
+        fi
+        export DATABRICKS_AUTH_TYPE
+    fi
+    
+    # Add debugging information
+    print_info "Using authentication type: ${DATABRICKS_AUTH_TYPE:-not set}"
+    if [ "$DATABRICKS_AUTH_TYPE" = "pat" ]; then
+        print_info "Using PAT authentication with host: ${DATABRICKS_HOST:-not set}"
+        print_info "Token length: ${#DATABRICKS_TOKEN} characters"
+    elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+        print_info "Using profile authentication: ${DATABRICKS_CONFIG_PROFILE:-not set}"
+    fi
+    
+    # Deploy with appropriate authentication method
+    if [ "$DATABRICKS_AUTH_TYPE" = "profile" ] && [ -n "$DATABRICKS_CONFIG_PROFILE" ]; then
+        # Use profile-based authentication with explicit auth method override
+        print_info "Forcing profile-only authentication..."
+        
+        # Aggressively clear all conflicting auth environment variables
+        OLD_HOST="$DATABRICKS_HOST"
+        OLD_TOKEN="$DATABRICKS_TOKEN"
+        unset DATABRICKS_HOST DATABRICKS_TOKEN DATABRICKS_AUTH_TYPE
+        # Also clear any other potential conflicting vars
+        unset DATABRICKS_CLIENT_ID DATABRICKS_CLIENT_SECRET DATABRICKS_AZURE_CLIENT_ID
+        
+        if databricks bundle deploy -t dev --profile "$DATABRICKS_CONFIG_PROFILE" \
+            --var="participant_prefix=${CLEAN_PREFIX}" \
+            --var="workshop_catalog=${WORKSHOP_CATALOG}" \
+            --var="app_name=${WORKSHOP_APP_NAME}" \
+            --var="mcp_server_name=${MCP_SERVER_NAME}"; then
+            print_status "Bundle deployed successfully"
+        else
+            print_error "Bundle deployment failed with profile authentication"
+            print_info "The profile may contain conflicting authentication methods."
+            print_info "Try running: databricks auth login --profile $DATABRICKS_CONFIG_PROFILE"
+            exit 1
+        fi
+        
+        # Restore variables if they existed (though they shouldn't for profile auth)
+        [ -n "$OLD_HOST" ] && export DATABRICKS_HOST="$OLD_HOST"
+        [ -n "$OLD_TOKEN" ] && export DATABRICKS_TOKEN="$OLD_TOKEN"
     else
-        print_error "Bundle deployment failed"
-        exit 1
+        # Use PAT authentication (default)
+        if databricks bundle deploy -t dev \
+            --var="participant_prefix=${CLEAN_PREFIX}" \
+            --var="workshop_catalog=${WORKSHOP_CATALOG}" \
+            --var="app_name=${WORKSHOP_APP_NAME}" \
+            --var="mcp_server_name=${MCP_SERVER_NAME}"; then
+            print_status "Bundle deployed successfully"
+        else
+            print_error "Bundle deployment failed with PAT authentication"
+            print_info "Please check:"
+            print_info "  1. Your token is valid: databricks current-user me"
+            print_info "  2. You have permissions to create apps and jobs"
+            print_info "  3. Your workspace supports Databricks Apps"
+            print_info ""
+            print_info "You can also try using profile authentication instead:"
+            print_info "  databricks configure --profile your-profile-name"
+            print_info "  Then re-run this setup script and choose profile authentication"
+            exit 1
+        fi
     fi
 
     print_progress "Setting up your workshop catalog and sample data..."
-    if databricks bundle run setup_workshop_resources -t dev \
-        --var="participant_prefix=${CLEAN_PREFIX}" \
-        --var="workshop_catalog=${WORKSHOP_CATALOG}" \
-        --var="app_name=${WORKSHOP_APP_NAME}"; then
-        print_status "Workshop resources created successfully"
+    
+    # Use the same authentication method for bundle run as for deploy
+    if [ "$DATABRICKS_AUTH_TYPE" = "profile" ] && [ -n "$DATABRICKS_CONFIG_PROFILE" ]; then
+        # Clear conflicting auth variables for bundle run too
+        unset DATABRICKS_HOST DATABRICKS_TOKEN DATABRICKS_AUTH_TYPE
+        unset DATABRICKS_CLIENT_ID DATABRICKS_CLIENT_SECRET DATABRICKS_AZURE_CLIENT_ID
+        
+        if databricks bundle run setup_workshop_resources -t dev --profile "$DATABRICKS_CONFIG_PROFILE" \
+            --var="participant_prefix=${CLEAN_PREFIX}" \
+            --var="workshop_catalog=${WORKSHOP_CATALOG}" \
+            --var="app_name=${WORKSHOP_APP_NAME}"; then
+            print_status "Workshop resources created successfully"
+        else
+            print_warning "Resource setup encountered issues, but continuing..."
+        fi
     else
-        print_warning "Resource setup encountered issues, but continuing..."
+        if databricks bundle run setup_workshop_resources -t dev \
+            --var="participant_prefix=${CLEAN_PREFIX}" \
+            --var="workshop_catalog=${WORKSHOP_CATALOG}" \
+            --var="app_name=${WORKSHOP_APP_NAME}"; then
+            print_status "Workshop resources created successfully"
+        else
+            print_warning "Resource setup encountered issues, but continuing..."
+        fi
     fi
 
     # Set up custom MCP server template
