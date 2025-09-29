@@ -24,36 +24,6 @@ Each participant gets isolated resources (e.g., `mcp_workshop_john_doe`) - no co
 👉 **[See detailed setup guide →](./WORKSHOP_SETUP.md)**
 
 ---
-
-## 🚀 Alternative: One-Click Shared Deployment
-
-Deploy a single shared workshop instance using Databricks Asset Bundles:
-
-### Prerequisites
-
-- Databricks CLI installed and configured
-- Access to a Databricks workspace
-- Permissions to create apps and resources
-
-### Deploy the Workshop
-
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd mcp-workshop
-
-# Deploy to your workspace
-databricks bundle deploy
-```
-
-That's it! The workshop app will be automatically deployed with:
-
-✅ **Automatic Authentication** - No manual auth setup required
-✅ **User Authorization** - Respects your Unity Catalog permissions
-✅ **App Service Principal** - For background operations
-✅ **Workshop Resources** - Sample data and Unity Catalog setup
-✅ **Health Monitoring** - Built-in health checks and logging
-
 ### Access the Workshop
 
 After deployment, find your app URL in the Databricks workspace:
