@@ -4,65 +4,79 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Databricks Official Corporate Colors (HSL format) */
+    --databricks-innovation-orange: 11 100% 64%;  /* #FF5F46 */
+    --databricks-dark-navy: 195 31% 16%;          /* #1B3139 */
+    --databricks-warm-gray: 215 19% 66%;          /* #A0ACBE */
+    --databricks-true-white: 0 0% 100%;           /* #FFFFFF */
+    
+    /* Extended Brand Colors */
+    --databricks-teal: 193 19% 47%;               /* #618794 */
+    --databricks-green: 162 47% 52%;              /* #42BA91 */
+    --databricks-yellow: 38 96% 59%;              /* #FCBA33 */
+    --databricks-burgundy: 342 37% 50%;           /* #AB4057 */
+    
+    /* ShadCN/UI Color Mapping using Databricks Colors */
+    --background: var(--databricks-true-white);
+    --foreground: var(--databricks-dark-navy);
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: var(--databricks-true-white);
+    --card-foreground: var(--databricks-dark-navy);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: var(--databricks-true-white);
+    --popover-foreground: var(--databricks-dark-navy);
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: var(--databricks-innovation-orange);
+    --primary-foreground: var(--databricks-true-white);
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary: var(--databricks-warm-gray);
+    --secondary-foreground: var(--databricks-dark-navy);
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 215 19% 90%;  /* Lighter version of warm gray */
+    --muted-foreground: var(--databricks-warm-gray);
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent: var(--databricks-innovation-orange);
+    --accent-foreground: var(--databricks-true-white);
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: var(--databricks-innovation-orange);
+    --destructive-foreground: var(--databricks-true-white);
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 215 19% 85%;  /* Light border based on warm gray */
+    --input: 215 19% 85%;
+    --ring: var(--databricks-innovation-orange);
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode using Databricks Dark Navy as primary background */
+    --background: var(--databricks-dark-navy);
+    --foreground: var(--databricks-true-white);
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: var(--databricks-dark-navy);
+    --card-foreground: var(--databricks-true-white);
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: var(--databricks-dark-navy);
+    --popover-foreground: var(--databricks-true-white);
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: var(--databricks-innovation-orange);
+    --primary-foreground: var(--databricks-true-white);
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 195 31% 25%;  /* Lighter version of dark navy */
+    --secondary-foreground: var(--databricks-true-white);
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 195 31% 25%;
+    --muted-foreground: var(--databricks-warm-gray);
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: var(--databricks-innovation-orange);
+    --accent-foreground: var(--databricks-true-white);
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: var(--databricks-innovation-orange);
+    --destructive-foreground: var(--databricks-true-white);
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 195 31% 25%;
+    --input: 195 31% 25%;
+    --ring: var(--databricks-innovation-orange);
   }
 }
 

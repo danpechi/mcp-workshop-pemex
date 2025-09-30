@@ -1,17 +1,41 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --font-geist-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-geist-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+@theme {
+  /* Databricks Official Corporate Colors */
+  --color-innovation-orange: #FF5F46;
+  --color-dark-navy: #1B3139;
+  --color-warm-gray: #A0ACBE;
+  --color-true-white: #FFFFFF;
+  
+  /* Extended Brand Colors */
+  --color-teal: #618794;
+  --color-teal-dark: #143D4A;
+  --color-teal-light: #70C4AB;
+  --color-orange-light: #FF9E94;
+  --color-orange-dark: #BD2B26;
+  --color-yellow: #FCBA33;
+  --color-yellow-light: #FFCC66;
+  --color-yellow-dark: #BD802B;
+  --color-green: #42BA91;
+  --color-green-light: #9ED6C4;
+  --color-green-dark: #00875C;
+  --color-burgundy: #AB4057;
+  --color-burgundy-light: #BF7080;
+  --color-burgundy-dark: #4A121A;
+  
+  /* Semantic colors */
+  --color-primary: #FF5F46;
+  --color-secondary: #A0ACBE;
+  --color-accent: #FF5F46;
+  --color-success: #42BA91;
+  --color-warning: #FCBA33;
+  --color-error: #FF5F46;
+  --color-info: #618794;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: var(--color-true-white);
+  --foreground: var(--color-dark-navy);
 }
 
 body {

@@ -38,27 +38,27 @@ export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <aside className={`hidden lg:flex flex-col border-r border-slate-700 bg-slate-900 transition-all duration-300 sticky top-0 h-screen ${
+    <aside className={`hidden lg:flex flex-col border-r border-dark-navy bg-dark-navy transition-all duration-300 sticky top-0 h-screen ${
       isCollapsed ? 'w-16' : 'w-80'
     }`}>
       <div className="flex h-full flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+        <div className="p-4 border-b border-white/10 flex items-center justify-between">
           <Link href="/" className={`block ${isCollapsed ? 'hidden' : ''}`}>
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-lg bg-innovation-orange flex items-center justify-center">
                 <span className="text-white font-bold text-lg">DB</span>
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">MCP Workshop</h1>
-                <p className="text-xs text-slate-400">Databricks Model Context Protocol</p>
+                <p className="text-xs text-warm-gray">Databricks Model Context Protocol</p>
               </div>
             </div>
           </Link>
           
           {isCollapsed && (
             <Link href="/" className="block">
-              <div className="h-8 w-8 rounded-md bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-md bg-innovation-orange flex items-center justify-center">
                 <span className="text-white font-bold text-sm">DB</span>
               </div>
             </Link>
@@ -66,7 +66,7 @@ export default function Sidebar() {
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-md hover:bg-white/10 text-warm-gray hover:text-white transition-colors"
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             <svg 
@@ -87,12 +87,12 @@ export default function Sidebar() {
             <div key={item.href} className="space-y-2">
               <Link
                 href={item.href}
-                className={`group flex items-center rounded-lg border border-slate-700 bg-slate-800/50 hover:border-sky-500/50 hover:bg-slate-800 transition-all ${
+                className={`group flex items-center rounded-lg border border-white/10 bg-white/5 hover:border-innovation-orange hover:bg-innovation-orange/20 transition-all ${
                   isCollapsed ? 'p-2 justify-center' : 'gap-3 p-3'
                 }`}
                 title={isCollapsed ? `${item.label} - ${item.description}` : ''}
               >
-                <div className={`flex items-center justify-center rounded-md bg-slate-700 text-sm flex-shrink-0 ${
+                <div className={`flex items-center justify-center rounded-md bg-white/10 text-white text-sm flex-shrink-0 ${
                   isCollapsed ? 'h-10 w-10' : 'h-8 w-8'
                 }`}>
                   {item.icon}
@@ -100,12 +100,12 @@ export default function Sidebar() {
                 {!isCollapsed && (
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-slate-400">
+                      <span className="text-xs font-medium text-warm-gray/80">
                         {String(index + 1).padStart(2, '0')}
                       </span>
                       <h3 className="text-sm font-semibold text-white truncate">{item.label}</h3>
                     </div>
-                    <p className="text-xs text-slate-400 truncate">{item.description}</p>
+                    <p className="text-xs text-warm-gray/70 truncate">{item.description}</p>
                   </div>
                 )}
               </Link>
@@ -115,8 +115,8 @@ export default function Sidebar() {
                 <div className="ml-11 space-y-1">
                   {item.steps.map((step, stepIndex) => (
                     <div key={stepIndex} className="flex items-center gap-2 py-1">
-                      <div className="h-1.5 w-1.5 rounded-full bg-slate-600 flex-shrink-0"></div>
-                      <span className="text-xs text-slate-500 truncate">{step}</span>
+                      <div className="h-1.5 w-1.5 rounded-full bg-warm-gray/50 flex-shrink-0"></div>
+                      <span className="text-xs text-warm-gray/70 truncate">{step}</span>
                     </div>
                   ))}
                 </div>
@@ -127,8 +127,8 @@ export default function Sidebar() {
 
         {/* Footer */}
         {!isCollapsed && (
-          <div className="p-4 border-t border-slate-700">
-            <div className="text-xs text-slate-500 text-center">
+          <div className="p-4 border-t border-white/10">
+            <div className="text-xs text-warm-gray/70 text-center">
               © {new Date().getFullYear()} Databricks
             </div>
           </div>
