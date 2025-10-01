@@ -7,7 +7,7 @@ Interactive workshop for learning Databricks Model Context Protocol (MCP) with h
 **For workshop participants** - Get your own isolated environment with one command:
 
 ```bash
-git clone https://github.com/jai-behl/mcp-workshop.git
+git clone https://github.com/databricks-solutions/mcp-workshop.git
 cd mcp-workshop
 ./setup.sh
 ```
@@ -226,7 +226,7 @@ databricks apps list | grep "mcp-workshop-app-"
 
 ## 📄 License
 
-This workshop is provided under the Apache License 2.0. See LICENSE file for details.
+&copy; 2025 Databricks, Inc. All rights reserved. The source in this notebook is provided subject to the Databricks License [https://databricks.com/db-license-source]. All included or referenced third party libraries are subject to the licenses set forth below.
 
 ---
 
