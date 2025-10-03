@@ -1,16 +1,34 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
+# ⚠️ DEPRECATED: This script is no longer used for workshop deployment
+#
+# The workshop frontend now runs locally (npm run dev) instead of being deployed
+# as a Databricks App. Only the custom MCP server is deployed to Databricks Apps.
+#
+# See DEPLOY_NOTES.md for the current deployment architecture.
+#
+# To deploy the workshop:
+# 1. Run ./setup.sh for interactive participant setup
+# 2. Or use: databricks bundle deploy -t dev
+#
+# This file is kept for reference only.
 
-# --- Configuration ---
-# The path in your Databricks workspace where the app files will be uploaded.
-# It's a good practice to include your username to avoid conflicts.
-# Replace 'your-email@databricks.com' with your actual Databricks username.
-APP_FOLDER_IN_WORKSPACE="/Workspace/Users/jai.behl@databricks.com/mcp-workshop-app-dev"
+echo "⚠️  WARNING: This deployment script is deprecated."
+echo ""
+echo "The workshop frontend now runs locally for better development experience."
+echo "Only the custom MCP server is deployed as a Databricks App."
+echo ""
+echo "Please use one of these instead:"
+echo "  • ./setup.sh                    (interactive participant setup)"
+echo "  • databricks bundle deploy      (manual deployment)"
+echo ""
+echo "See DEPLOY_NOTES.md for details."
+echo ""
+exit 1
 
-# The name of the Databricks App. This should match the name in your databricks.yml file for the 'dev' target.
-LAKEHOUSE_APP_NAME="mcp-workshop-app-dev"
+# --- Original Configuration (kept for reference) ---
+# APP_FOLDER_IN_WORKSPACE="/Workspace/Users/jai.behl@databricks.com/mcp-workshop-app-dev"
+# LAKEHOUSE_APP_NAME="mcp-workshop-app-dev"
 
 
 # --- Frontend Build ---

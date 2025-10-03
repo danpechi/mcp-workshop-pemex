@@ -20,9 +20,8 @@ That's it! The script will:
 - ✅ Install required dependencies automatically
 - ✅ Set up your authentication
 - ✅ Create your personal Unity Catalog with sample data
-- ✅ Deploy your own Databricks App instance
+- ✅ Deploy your custom MCP server as a Databricks App
 - ✅ Configure your local development environment
-- ✅ Set up your custom MCP server
 
 ## 🎯 What You Get
 
@@ -36,19 +35,17 @@ Participant: john_doe
 │       ├── products (sample data)
 │       ├── customers (sample data)
 │       └── sales (sample data)
-├── Databricks App: mcp-workshop-app-john-doe
-│   └── Interactive workshop interface
-├── MCP Server: databricks-mcp-john-doe
-│   └── Custom SQL tools
+├── MCP Server App: databricks-mcp-john-doe
+│   └── Custom SQL tools (deployed as Databricks App)
 └── Local Development Environment
+    ├── Workshop frontend (http://localhost:3000)
     └── Connected to your resources
 ```
 
 ### Resource Naming Convention
 - **Prefix**: Your username (cleaned: lowercase, underscores only)
 - **Catalog**: `mcp_workshop_{your_prefix}`
-- **App**: `mcp-workshop-app-{your_prefix}`
-- **MCP Server**: `databricks-mcp-{your_prefix}`
+- **MCP Server App**: `databricks-mcp-{your_prefix}`
 
 ## 🔧 Setup Process
 
@@ -76,8 +73,8 @@ npm run dev
 # Visit: http://localhost:3000
 ```
 
-### Access Your Databricks App
-Check the Databricks Apps page for: `mcp-workshop-app-{your_prefix}`
+### Access Your MCP Server App
+Check the Databricks Apps page for: `databricks-mcp-{your_prefix}`
 
 ### Workshop Sections
 1. **Managed MCP** - Use built-in Unity Catalog functions

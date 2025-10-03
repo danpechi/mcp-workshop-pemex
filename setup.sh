@@ -264,8 +264,7 @@ main() {
     echo ""
     echo "This script will set up your personal workshop environment with:"
     echo "• Your own Unity Catalog with sample data"
-    echo "• Your own Databricks App instance"
-    echo "• Custom MCP server configuration"
+    echo "• Custom MCP server deployed as a Databricks App"
     echo "• Local development environment"
     echo ""
 
@@ -285,8 +284,7 @@ main() {
     print_info "Your resource prefix will be: ${CLEAN_PREFIX}"
     print_info "This will create resources like:"
     print_info "  • Catalog: mcp_workshop_${CLEAN_PREFIX}"
-    print_info "  • App: mcp-workshop-app-${CLEAN_PREFIX}"
-    print_info "  • MCP Server: databricks-mcp-${CLEAN_PREFIX}"
+    print_info "  • MCP Server App: databricks-mcp-${CLEAN_PREFIX}"
     echo ""
 
     read -p "$(echo -e "${BLUE}❓${NC} Continue with this setup? (y/N): ")" confirm
@@ -429,7 +427,6 @@ main() {
 
     # Create user-specific resource names
     WORKSHOP_CATALOG="mcp_workshop_${CLEAN_PREFIX}"
-    WORKSHOP_APP_NAME="mcp-workshop-app-${CLEAN_PREFIX}"
     MCP_SERVER_NAME="databricks-mcp-${CLEAN_PREFIX}"
 
     # Update configuration
@@ -458,7 +455,7 @@ EOF
     print_header "🚀 Deploying Your Workshop Environment"
     print_info "This will create your personal workshop resources..."
 
-    print_progress "Deploying Databricks bundle (workshop app + MCP server)..."
+    print_progress "Deploying Databricks bundle (MCP server)..."
     
     # Ensure virtual environment is activated and environment variables are available
     if [ -f ".venv/bin/activate" ]; then
@@ -510,7 +507,6 @@ EOF
         if databricks bundle deploy -t dev --profile "$DATABRICKS_CONFIG_PROFILE" \
             --var="participant_prefix=${CLEAN_PREFIX}" \
             --var="workshop_catalog=${WORKSHOP_CATALOG}" \
-            --var="app_name=${WORKSHOP_APP_NAME}" \
             --var="mcp_server_name=${MCP_SERVER_NAME}"; then
             print_status "Bundle deployed successfully"
         else
@@ -528,7 +524,6 @@ EOF
         if databricks bundle deploy -t dev \
             --var="participant_prefix=${CLEAN_PREFIX}" \
             --var="workshop_catalog=${WORKSHOP_CATALOG}" \
-            --var="app_name=${WORKSHOP_APP_NAME}" \
             --var="mcp_server_name=${MCP_SERVER_NAME}"; then
             print_status "Bundle deployed successfully"
         else
@@ -536,7 +531,7 @@ EOF
             print_info "Please check:"
             print_info "  1. Your token is valid: databricks current-user me"
             print_info "  2. You have permissions to create apps and jobs"
-            print_info "  3. Your workspace supports Databricks Apps"
+            print_info "  3. Your workspace supports Databricks Apps (for MCP server)"
             print_info ""
             print_info "You can also try using profile authentication instead:"
             print_info "  databricks configure --profile your-profile-name"
@@ -555,8 +550,7 @@ EOF
         
         if databricks bundle run setup_workshop_resources -t dev --profile "$DATABRICKS_CONFIG_PROFILE" \
             --var="participant_prefix=${CLEAN_PREFIX}" \
-            --var="workshop_catalog=${WORKSHOP_CATALOG}" \
-            --var="app_name=${WORKSHOP_APP_NAME}"; then
+            --var="workshop_catalog=${WORKSHOP_CATALOG}"; then
             print_status "Workshop resources created successfully"
         else
             print_warning "Resource setup encountered issues, but continuing..."
@@ -564,8 +558,7 @@ EOF
     else
         if databricks bundle run setup_workshop_resources -t dev \
             --var="participant_prefix=${CLEAN_PREFIX}" \
-            --var="workshop_catalog=${WORKSHOP_CATALOG}" \
-            --var="app_name=${WORKSHOP_APP_NAME}"; then
+            --var="workshop_catalog=${WORKSHOP_CATALOG}"; then
             print_status "Workshop resources created successfully"
         else
             print_warning "Resource setup encountered issues, but continuing..."
@@ -665,14 +658,13 @@ EOF
     echo ""
     echo -e "${CYAN}📋 Your Workshop Resources:${NC}"
     echo "   • Catalog: ${WORKSHOP_CATALOG}"
-    echo "   • App: ${WORKSHOP_APP_NAME}"
-    echo "   • MCP Server: ${MCP_SERVER_NAME}"
+    echo "   • MCP Server App: ${MCP_SERVER_NAME}"
     echo ""
     echo -e "${CYAN}🚀 Next Steps:${NC}"
     echo "   1. Start the frontend: cd frontend && npm run dev"
     echo "   2. Visit: http://localhost:3000"
-    echo "   3. Your Databricks App will be available shortly at:"
-    echo "      https://your-workspace.databricksapps.com (check Apps page)"
+    echo "   3. Your MCP Server App will be available shortly at:"
+    echo "      (check Databricks Apps page for: ${MCP_SERVER_NAME})"
     echo ""
     echo -e "${CYAN}🔧 Configuration Files Created:${NC}"
     echo "   • .env.local - Your workshop configuration"

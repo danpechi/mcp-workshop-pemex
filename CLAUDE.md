@@ -59,11 +59,11 @@ npm run lint
 ### Databricks Deployment
 
 ```bash
-# Full deployment (builds frontend, packages backend, uploads, deploys)
-./deploy.sh
+# Participant setup (RECOMMENDED - interactive, creates all resources)
+./setup.sh
 
-# Deploy using Asset Bundle
-databricks bundle deploy -t dev    # Development target
+# Manual deployment using Asset Bundle
+databricks bundle deploy -t dev    # Development target (MCP server only)
 databricks bundle deploy -t prod   # Production target
 
 # Validate bundle configuration
@@ -72,6 +72,8 @@ databricks bundle validate
 # Run setup jobs
 databricks bundle run setup_workshop_resources -t dev
 databricks bundle run cleanup_workshop_resources -t dev
+
+# NOTE: ./deploy.sh is deprecated - workshop frontend now runs locally
 ```
 
 ### Workshop Cleanup (Instructor)
@@ -102,10 +104,9 @@ databricks bundle run cleanup_workshop_resources -t dev
   - `CodeBlock.tsx`: Syntax-highlighted code examples
   - `InfoBox.tsx`: Callouts and warnings
 
-### Backend (`backend/`)
-- **`app.py`**: FastAPI server that serves static frontend files
-- **`app.yaml`**: Databricks App configuration (defines startup command)
-- **`requirements.txt`**: Python dependencies (FastAPI, uvicorn)
+### Backend (`backend/`) - DEPRECATED
+- **Status**: No longer deployed. Workshop frontend runs locally instead.
+- **See**: `backend/README.md` for details on deprecation
 
 ### Setup Scripts (`setup/`)
 Python notebooks run as Databricks Jobs to provision resources:
@@ -115,32 +116,28 @@ Python notebooks run as Databricks Jobs to provision resources:
 
 ### Configuration
 - **`databricks.yml`**: Main Asset Bundle configuration
-  - Defines Databricks App resource
+  - Defines MCP server app (NOT workshop frontend)
   - Configures setup/cleanup jobs
-  - Manages variables (catalog name, app name, participant prefix)
+  - Manages variables (catalog name, participant prefix)
   - Defines targets (dev, prod)
-- **`setup.sh`**: Interactive participant onboarding script
-- **`deploy.sh`**: Automated build and deployment script
+- **`setup.sh`**: Interactive participant onboarding script (RECOMMENDED)
+- **`deploy.sh`**: DEPRECATED - see DEPLOY_NOTES.md
 - **`cleanup_workshop.sh`**: Workshop resource cleanup script
+- **`DEPLOY_NOTES.md`**: Current deployment architecture documentation
 
 ## Important Implementation Details
 
-### Next.js Static Export
-The frontend MUST be configured for static export:
-```javascript
-// frontend/next.config.mjs
-const nextConfig = {
-  output: 'export',
-  trailingSlash: true,
-  // ...
-};
-```
+### Deployment Architecture (Updated)
+The workshop now uses a **hybrid deployment** model:
+1. **Workshop Frontend**: Runs locally via `npm run dev` (NOT deployed to Databricks Apps)
+2. **Custom MCP Server**: Deployed to Databricks Apps (from `custom-mcp-template/`)
+3. **Resources**: Unity Catalog, sample data (via Databricks bundle jobs)
 
-### Deployment Flow (deploy.sh)
-1. Build frontend: `cd frontend && npm run build` → creates `frontend/out/`
-2. Package backend: Copy `frontend/out/*` → `backend/build/static/`
-3. Upload to workspace: `databricks workspace import-dir backend/build {workspace_path}`
-4. Deploy app: `databricks apps deploy {app_name} --source-code-path {workspace_path}`
+See `DEPLOY_NOTES.md` for complete architecture details.
+
+### Legacy Deployment (No Longer Used)
+The `backend/` directory and `deploy.sh` script previously deployed the workshop frontend
+as a Databricks App, but this is no longer the case. These files are kept for reference.
 
 ### Username Cleaning (setup.sh)
 Usernames are cleaned for resource naming:
@@ -153,7 +150,8 @@ Usernames are cleaned for resource naming:
 ### Bundle Variables
 Key variables in `databricks.yml`:
 - `workshop_catalog`: Base catalog name (default: `mcp_workshop`)
-- `app_name`: App name (changes per target: `-dev` suffix for dev)
+- `app_name`: DEPRECATED - was for workshop app, no longer used
+- `mcp_server_name`: MCP server app name (default: `databricks-mcp-workshop`)
 - `participant_prefix`: Used for resource isolation (default: `default`)
 
 ## Workshop Content Sections

@@ -41,19 +41,6 @@ targets:
 resources:
   # Databricks Apps for the workshop
   apps:
-    # Workshop instructional app
-    mcp_workshop_app:
-      name: ${var.app_name}
-      description: "Interactive workshop for learning Databricks MCP (Model Context Protocol)"
-
-      # Frontend workshop content
-      source_code_path: "/Workspace/Users/${workspace.current_user.userName}/${var.app_name}"
-
-      # Permissions - allow all workspace users to access the workshop
-      permissions:
-        - level: CAN_USE
-          group_name: "users"
-
     # Custom MCP server for hands-on learning
     mcp_server_app:
       name: ${var.mcp_server_name}

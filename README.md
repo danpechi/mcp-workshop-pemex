@@ -14,8 +14,7 @@ cd mcp-workshop
 
 This interactive setup creates your personal workshop environment:
 - 🏗️ **Your own Unity Catalog** with sample data
-- 🚀 **Personal Databricks App** instance
-- ⚙️ **Custom MCP server** configuration
+- 🚀 **Custom MCP server** deployed as a Databricks App
 - 💻 **Local development** environment
 - 🔐 **Secure authentication** setup
 
@@ -26,11 +25,13 @@ Each participant gets isolated resources (e.g., `mcp_workshop_john_doe`) - no co
 ---
 ### Access the Workshop
 
-After deployment, find your app URL in the Databricks workspace:
+After deployment, access the workshop locally:
 
-1. Go to **Apps** in your Databricks workspace
-2. Click on **mcp-workshop-app**
-3. Click **Open App** to start the workshop
+1. Navigate to the frontend: `cd frontend`
+2. Start the dev server: `npm run dev`
+3. Visit **http://localhost:3000** to start the workshop
+
+Your MCP server will be deployed as a Databricks App (check the Apps page)
 
 ## 📚 Workshop Content
 
@@ -81,20 +82,19 @@ This workshop uses **Databricks Apps built-in authentication** exclusively:
 │                 Databricks Workspace                        │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────────┐    ┌──────────────────────────────────┐ │
-│  │  Workshop App   │    │         Unity Catalog           │ │
-│  │  (Next.js)      │◄──►│  - mcp_workshop catalog         │ │
-│  │                 │    │  - Sample data & schemas        │ │
-│  │  Auto Auth:     │    │  - Vector Search indexes       │ │
-│  │  • User token   │    │  - Genie Spaces                │ │
-│  │  • Service      │    └──────────────────────────────────┘ │
-│  │    principal    │                                        │
-│  └─────────────────┘    ┌──────────────────────────────────┐ │
-│                         │       MCP Integrations          │ │
-│  ┌─────────────────┐    │  - Managed MCP servers          │ │
-│  │  Setup Jobs     │    │  - External connections         │ │
-│  │  - Catalog      │    │  - Custom MCP apps              │ │
-│  │  - Sample data  │    └──────────────────────────────────┘ │
-│  │  - Vector index │                                        │
+│  │  Local Dev      │    │         Unity Catalog           │ │
+│  │  Frontend       │◄──►│  - mcp_workshop catalog         │ │
+│  │  (Next.js)      │    │  - Sample data & schemas        │ │
+│  │                 │    │  - Vector Search indexes       │ │
+│  │  http://        │    │  - Genie Spaces                │ │
+│  │  localhost:3000 │    └──────────────────────────────────┘ │
+│  └─────────────────┘                                        │
+│                         ┌──────────────────────────────────┐ │
+│  ┌─────────────────┐    │       MCP Integrations          │ │
+│  │  Setup Jobs     │    │  - Managed MCP servers          │ │
+│  │  - Catalog      │    │  - External connections         │ │
+│  │  - Sample data  │    │  - Custom MCP App (deployed)    │ │
+│  │  - Vector index │    └──────────────────────────────────┘ │
 │  └─────────────────┘                                        │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -104,19 +104,20 @@ This workshop uses **Databricks Apps built-in authentication** exclusively:
 ```
 mcp-workshop/
 ├── databricks.yml              # Bundle configuration
-├── app/                        # Next.js workshop application
+├── frontend/                   # Next.js workshop application (local dev)
 │   ├── src/
 │   │   ├── app/               # App router pages
-│   │   ├── components/        # React components
-│   │   ├── lib/              # Utilities and auth
-│   │   └── types/            # TypeScript definitions
-│   ├── package.json
-│   └── Dockerfile            # Container configuration
-├── setup/                     # Workshop setup notebooks
+│   │   └── components/        # React components
+│   └── package.json
+├── custom-mcp-template/        # Custom MCP server (deployed to Databricks Apps)
+│   ├── server/                # FastAPI MCP server
+│   ├── client/                # React client UI
+│   └── deploy.sh              # Deployment script
+├── setup/                      # Workshop setup jobs
 │   ├── create_workshop_catalog.py
 │   ├── setup_sample_data.py
-│   └── create_vector_search_index.py
-└── resources/                 # Additional bundle resources
+│   └── deploy_mcp_template.py
+└── backend/                    # Legacy (not deployed)
 ```
 
 ## 🎯 Learning Objectives
