@@ -244,7 +244,7 @@ export default function ManagedMcpPage() {
               <CodeBlock
                 language="sql"
                 title="Customer Order History Function"
-                code={`CREATE OR REPLACE FUNCTION mcp_workshop.default.get_customer_orders(
+                code={`CREATE OR REPLACE FUNCTION mcp_workshop_{prefix}.default.get_customer_orders(
   customer_id STRING COMMENT 'The customer ID to look up (format: C0001, C0002, etc.)'
 )
 RETURNS TABLE
@@ -258,8 +258,8 @@ RETURN
     s.quantity,
     s.revenue,
     ROUND(s.revenue / s.quantity, 2) as unit_price
-  FROM mcp_workshop.default.sales s
-  JOIN mcp_workshop.default.products p ON s.product_id = p.product_id
+  FROM mcp_workshop_{prefix}.default.sales s
+  JOIN mcp_workshop_{prefix}.default.products p ON s.product_id = p.product_id
   WHERE s.customer_id = customer_id
   ORDER BY s.sale_date DESC;`}
               />
@@ -274,7 +274,7 @@ RETURN
               <CodeBlock
                 language="sql"
                 title="Product Performance Function"
-                code={`CREATE OR REPLACE FUNCTION mcp_workshop.default.get_product_performance(
+                code={`CREATE OR REPLACE FUNCTION mcp_workshop_{prefix}.default.get_product_performance(
   category STRING DEFAULT NULL COMMENT 'Optional: Filter by product category (Electronics, Clothing, Books, etc.). Leave NULL for all categories.'
 )
 RETURNS TABLE
@@ -290,8 +290,8 @@ RETURN
     SUM(s.revenue) as total_revenue,
     AVG(s.revenue / s.quantity) as avg_selling_price,
     ROUND((AVG(s.revenue / s.quantity) - p.price) / p.price * 100, 2) as price_variance_pct
-  FROM mcp_workshop.default.products p
-  LEFT JOIN mcp_workshop.default.sales s ON p.product_id = s.product_id
+  FROM mcp_workshop_{prefix}.default.products p
+  LEFT JOIN mcp_workshop_{prefix}.default.sales s ON p.product_id = s.product_id
   WHERE category IS NULL OR p.category = category
   GROUP BY p.product_id, p.product_name, p.category, p.price
   ORDER BY total_revenue DESC NULLS LAST;`}
@@ -306,7 +306,7 @@ RETURN
               <CodeBlock
                 language="sql"
                 title="Regional Sales Summary Function"
-                code={`CREATE OR REPLACE FUNCTION mcp_workshop.default.get_regional_sales(
+                code={`CREATE OR REPLACE FUNCTION mcp_workshop_{prefix}.default.get_regional_sales(
   region STRING DEFAULT NULL COMMENT 'Optional: Filter by region (North, South, East, West). Leave NULL for all regions.'
 )
 RETURNS TABLE
@@ -319,8 +319,8 @@ RETURN
     SUM(s.revenue) as total_revenue,
     AVG(s.revenue) as avg_order_value,
     SUM(s.quantity) as total_items_sold
-  FROM mcp_workshop.default.customers c
-  LEFT JOIN mcp_workshop.default.sales s ON c.customer_id = s.customer_id
+  FROM mcp_workshop_{prefix}.default.customers c
+  LEFT JOIN mcp_workshop_{prefix}.default.sales s ON c.customer_id = s.customer_id
   WHERE region IS NULL OR c.region = region
   GROUP BY c.region
   ORDER BY total_revenue DESC NULLS LAST;`}
@@ -335,7 +335,7 @@ RETURN
               <CodeBlock
                 language="sql"
                 title="Customer Insights Function"
-                code={`CREATE OR REPLACE FUNCTION mcp_workshop.default.get_customer_insights(
+                code={`CREATE OR REPLACE FUNCTION mcp_workshop_{prefix}.default.get_customer_insights(
   customer_id STRING COMMENT 'The customer ID to analyze (format: C0001, C0002, etc.)'
 )
 RETURNS TABLE
@@ -353,9 +353,9 @@ RETURN
     MAX(s.sale_date) as last_purchase_date,
     DATEDIFF(CURRENT_DATE(), MAX(s.sale_date)) as days_since_last_purchase,
     COUNT(DISTINCT p.category) as categories_purchased
-  FROM mcp_workshop.default.customers c
-  LEFT JOIN mcp_workshop.default.sales s ON c.customer_id = s.customer_id
-  LEFT JOIN mcp_workshop.default.products p ON s.product_id = p.product_id
+  FROM mcp_workshop_{prefix}.default.customers c
+  LEFT JOIN mcp_workshop_{prefix}.default.sales s ON c.customer_id = s.customer_id
+  LEFT JOIN mcp_workshop_{prefix}.default.products p ON s.product_id = p.product_id
   WHERE c.customer_id = customer_id
   GROUP BY c.customer_id, c.customer_name, c.email, c.region, c.signup_date;`}
               />

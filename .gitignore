@@ -88,3 +88,4 @@ venv.bak/
 
 # Config files
 *conf*.json
+custom-mcp-template/config.yaml
