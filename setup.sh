@@ -57,7 +57,9 @@ clean_username() {
     # Take first part before @ or . and clean it
     local first_part=$(echo "$username" | cut -d'@' -f1 | cut -d'.' -f1)
     # Convert to lowercase, replace spaces and hyphens with underscores, remove special chars
-    echo "$first_part" | tr '[:upper:]' '[:lower:]' | tr ' -' '__' | sed 's/[^a-z0-9_]//g' | sed 's/__*/_/g' | sed 's/^_//' | sed 's/_$//'
+    local cleaned=$(echo "$first_part" | tr '[:upper:]' '[:lower:]' | tr ' -' '__' | sed 's/[^a-z0-9_]//g' | sed 's/__*/_/g' | sed 's/^_//' | sed 's/_$//')
+    # Crop to first 12 characters to respect Databricks Apps Name limit
+    echo "$cleaned" | cut -c1-12
 }
 
 # Function to update or add a value in .env.local
