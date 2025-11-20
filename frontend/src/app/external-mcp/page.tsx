@@ -111,20 +111,22 @@ export default function ExternalMcpPage() {
               <h4 className="text-xl font-bold text-slate-900 mb-4">Create the HTTP Connection</h4>
               <p className="text-slate-700 mb-4">
                 In your Databricks workspace, navigate to <strong>Catalog</strong> → <strong>External Data</strong> → <strong>Connections</strong> and click on <strong>+ Create connection</strong> and select <strong>HTTP</strong>. Enter the following details:
+              </p>
+              <div className="space-y-3 mb-6">
                 <ul className="space-y-2 text-slate-700">
-                  <li>• Connection name: github_mcp_connection_{name_prefix}</li>
+                  <li>• Connection name: github_mcp_connection_(name_prefix)</li>
                   <li>• Connection type: HTTP</li>
                   <li>• Auth type: Bearer token</li>
                   <li>• Click <strong>Next</strong></li>
                   <li>• Host: https://api.github.com</li>
                   <li>• Port: 443</li>
-                  <li>• Bearer token: <insert_token_here></insert_token_here></li>
+                  <li>• Bearer token: _insert_token_here_</li>
                   <li>• Click <strong>Create</strong></li>
                   <li>• Base path: /mcp</li>
                   <li>• Check "Is MCP connection" (set to True)</li>
                   <li>• Click <strong>Create connection</strong></li>
                 </ul>
-              </p>
+              </div>
               
               <CodeBlock
                 language="sql"

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const workshopSections = [
   {
-    title: "Managed MCP Servers",
+    title: "UC Tools, Genie Spaces & Managed MCP Servers",
     description: "Start here! Use Databricks' built-in MCP servers for Vector Search, Unity Catalog functions, and Genie spaces.",
     href: "/managed-mcp",
     icon: "🔧",
@@ -55,9 +55,9 @@ export default function Home() {
           </div>
           
           <h1 className="text-6xl font-bold text-dark-navy mb-8 leading-tight">
-            Master Databricks<br />
+            Prototyping with Confidence<br />
             <span className="text-innovation-orange font-extrabold">
-              Model Context Protocol
+              Databricks Session
             </span>
           </h1>
           

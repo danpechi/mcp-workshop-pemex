@@ -16,7 +16,7 @@ export default function ManagedMcpPage() {
               🔧
             </div>
             <div>
-              <h1 className="text-5xl font-bold text-slate-900 mb-2">Managed MCP Servers</h1>
+              <h1 className="text-5xl font-bold text-slate-900 mb-2">UC Tools, Genie Spaces as Managed MCP Servers</h1>
               <p className="text-xl text-slate-600">Production-ready tools with zero setup</p>
             </div>
           </div>
