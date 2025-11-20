@@ -84,9 +84,6 @@ Visit Databricks workspace → Apps → your app → Logs
 
 ## Connecting to the MCP server
 
-[//]: # (TODO: once official Databricks docs for using MCP servers in agents are live, replace this with a link)
-[//]: # (to that section)
-
 To connect to the MCP server, use the `Streamable HTTP` transport with the following URL:
 
 ```
@@ -101,3 +98,7 @@ databricks auth token -p <name-of-your-profile>
 ```
 
 Please note that the URL should end with `/mcp/` (including the trailing slash), as this is required for the server to work correctly.
+
+Resources:
+ *[Connect to a custom MCP Server](https://docs.databricks.com/aws/en/generative-ai/mcp/custom-mcp#connect-to-the-custom-mcp-server)
+ *[Example notebook](https://docs.databricks.com/aws/en/generative-ai/mcp/custom-mcp#example-notebooks-build-an-agent-with-databricks-mcp-servers)

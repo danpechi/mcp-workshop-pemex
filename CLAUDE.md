@@ -157,9 +157,9 @@ Key variables in `databricks.yml`:
 ## Workshop Content Sections
 
 1. **Managed MCP Servers** (45 min): Unity Catalog functions, Vector Search, Genie Spaces
-2. **Local IDE Integration** (30 min): Cursor IDE, Claude Desktop, VS Code MCP setup
-3. **External MCP Servers** (40 min): Unity Catalog connections, GitHub/Slack integrations
-4. **Custom MCP Servers** (60 min): Building and deploying custom MCP servers as Databricks Apps
+2. **External MCP Servers** (40 min): Unity Catalog connections, GitHub/Slack integrations
+3. **Custom MCP Servers** (60 min): Building and deploying custom MCP servers as Databricks Apps
+4. **Local IDE Integration** (30 min): Cursor IDE, Claude Desktop, VS Code MCP setup
 
 ## Development Notes
 
