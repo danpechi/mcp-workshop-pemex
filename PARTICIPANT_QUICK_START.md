@@ -36,50 +36,52 @@ databricks current-user me
 
 ### Step 3: Create Configuration Files
 
-Create **two** files with your workshop details.
+Create **two** files with your workshop details. Use your code editor (VS Code, etc.) to create these files.
 
-#### File 1: `mcp-workshop/.env.local` (in the repo root)
+---
 
-```bash
-# Replace YOUR_CATALOG and YOUR_SCHEMA with values from your admin
-cat > .env.local << 'EOF'
-WORKSHOP_CATALOG=YOUR_CATALOG
-WORKSHOP_SCHEMA=YOUR_SCHEMA
-PARTICIPANT_NAME=YOUR_SCHEMA
-PARTICIPANT_PREFIX=YOUR_SCHEMA
-MCP_APP_NAME=mcp-custom-server-YOUR_SCHEMA
+#### File 1: `.env.local` (in the repo root: `mcp-workshop/.env.local`)
+
+Create a new file called `.env.local` in the `mcp-workshop` folder with this content:
+
+```
+WORKSHOP_CATALOG=<your_catalog>
+WORKSHOP_SCHEMA=<your_schema>
+PARTICIPANT_NAME=<your_schema>
+PARTICIPANT_PREFIX=<your_schema>
+MCP_APP_NAME=mcp-custom-server-<your_schema>
 CREATE_CATALOG=false
-EOF
 ```
 
-**Example** (catalog=`customer_dec9_2025`, schema=`john_doe`):
-```bash
-cat > .env.local << 'EOF'
+**Replace `<your_catalog>` and `<your_schema>` with the values from your admin.**
+
+**Example** (if catalog=`customer_dec9_2025` and schema=`john_doe`):
+```
 WORKSHOP_CATALOG=customer_dec9_2025
 WORKSHOP_SCHEMA=john_doe
 PARTICIPANT_NAME=john_doe
 PARTICIPANT_PREFIX=john_doe
 MCP_APP_NAME=mcp-custom-server-john-doe
 CREATE_CATALOG=false
-EOF
 ```
 
-#### File 2: `mcp-workshop/frontend/.env.local`
+---
 
-```bash
-# Replace YOUR_CATALOG and YOUR_SCHEMA with values from your admin
-cat > frontend/.env.local << 'EOF'
-NEXT_PUBLIC_WORKSHOP_CATALOG=YOUR_CATALOG
-NEXT_PUBLIC_WORKSHOP_SCHEMA=YOUR_SCHEMA
-EOF
+#### File 2: `frontend/.env.local` (in the frontend folder: `mcp-workshop/frontend/.env.local`)
+
+Create a new file called `.env.local` in the `mcp-workshop/frontend` folder with this content:
+
+```
+NEXT_PUBLIC_WORKSHOP_CATALOG=<your_catalog>
+NEXT_PUBLIC_WORKSHOP_SCHEMA=<your_schema>
 ```
 
-**Example** (catalog=`customer_dec9_2025`, schema=`john_doe`):
-```bash
-cat > frontend/.env.local << 'EOF'
+**Replace `<your_catalog>` and `<your_schema>` with the values from your admin.**
+
+**Example** (if catalog=`customer_dec9_2025` and schema=`john_doe`):
+```
 NEXT_PUBLIC_WORKSHOP_CATALOG=customer_dec9_2025
 NEXT_PUBLIC_WORKSHOP_SCHEMA=john_doe
-EOF
 ```
 
 ### Step 4: Start the Workshop
@@ -177,17 +179,20 @@ Install the Databricks CLI: https://docs.databricks.com/dev-tools/cli/install.ht
 
 Install Node.js: https://nodejs.org/
 
-### Frontend shows wrong catalog name
+### Frontend shows wrong catalog/schema name
 
-Check that `frontend/.env.local` exists and has the correct catalog:
+Check that `frontend/.env.local` exists and has the correct values:
 ```bash
 cat frontend/.env.local
 ```
 
-Should show:
+Should show something like:
 ```
 NEXT_PUBLIC_WORKSHOP_CATALOG=customer_dec9_2025
+NEXT_PUBLIC_WORKSHOP_SCHEMA=john_doe
 ```
+
+If it's wrong, edit the file and restart the frontend (`npm run dev`).
 
 ### "Permission denied" errors in Databricks
 
@@ -197,17 +202,19 @@ Contact your workshop admin - they may need to re-run permissions for your accou
 
 ## Quick Reference
 
-```
-Your Catalog:  ____________________
-Your Schema:   ____________________
+Write down your values here:
 
-Your Tables:
-  - <catalog>.<schema>.products
-  - <catalog>.<schema>.customers
-  - <catalog>.<schema>.sales
+| Item | Your Value |
+|------|------------|
+| **Catalog** | __________________ |
+| **Schema** | __________________ |
 
-Workshop URL: http://localhost:3000
-```
+**Your Tables:**
+- `<catalog>.<schema>.products`
+- `<catalog>.<schema>.customers`
+- `<catalog>.<schema>.sales`
+
+**Workshop URL:** http://localhost:3000
 
 ---
 
