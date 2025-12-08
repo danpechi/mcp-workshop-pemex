@@ -448,10 +448,19 @@ main() {
         read -p "$(echo -e "${BLUE}Enter catalog name to use:${NC} ")" WORKSHOP_CATALOG
         CREATE_CATALOG="false"
         print_info "Will use existing catalog: ${WORKSHOP_CATALOG}"
+        
+        # Ask for schema name when using existing catalog
+        echo ""
+        print_info "Your admin may have created a schema for you (e.g., your name: john_doe)"
+        read -p "$(echo -e "${BLUE}Enter your schema name [default]:${NC} ")" WORKSHOP_SCHEMA
+        WORKSHOP_SCHEMA=${WORKSHOP_SCHEMA:-default}
+        print_info "Will use schema: ${WORKSHOP_SCHEMA}"
     else
         WORKSHOP_CATALOG="mcp_workshop_${CLEAN_PREFIX}"
+        WORKSHOP_SCHEMA="default"
         CREATE_CATALOG="true"
         print_info "Will create new catalog: ${WORKSHOP_CATALOG}"
+        print_info "Will use schema: ${WORKSHOP_SCHEMA}"
     fi
     echo ""
 
@@ -459,6 +468,7 @@ main() {
     update_env_value "PARTICIPANT_NAME" "$PARTICIPANT_NAME" "Workshop participant information"
     update_env_value "PARTICIPANT_PREFIX" "$CLEAN_PREFIX"
     update_env_value "WORKSHOP_CATALOG" "$WORKSHOP_CATALOG" "Workshop resources"
+    update_env_value "WORKSHOP_SCHEMA" "$WORKSHOP_SCHEMA"
     update_env_value "MCP_APP_NAME" "mcp-custom-server-${CLEAN_PREFIX}" "Custom MCP Server app name"
     update_env_value "CREATE_CATALOG" "$CREATE_CATALOG" "Catalog creation mode"
 
@@ -470,6 +480,7 @@ main() {
 PARTICIPANT_NAME="${PARTICIPANT_NAME}"
 PARTICIPANT_PREFIX="${CLEAN_PREFIX}"
 WORKSHOP_CATALOG="${WORKSHOP_CATALOG}"
+WORKSHOP_SCHEMA="${WORKSHOP_SCHEMA}"
 MCP_APP_NAME="mcp-custom-server-${CLEAN_PREFIX}"
 CREATE_CATALOG="${CREATE_CATALOG}"
 CREATED_DATE="$(date)"
@@ -673,7 +684,7 @@ EOF
         # Update frontend environment for this participant
         cat > "frontend/.env.local" << EOF
 NEXT_PUBLIC_WORKSHOP_CATALOG=${WORKSHOP_CATALOG}
-NEXT_PUBLIC_WORKSHOP_SCHEMA=default
+NEXT_PUBLIC_WORKSHOP_SCHEMA=${WORKSHOP_SCHEMA}
 NEXT_PUBLIC_PARTICIPANT_NAME=${PARTICIPANT_NAME}
 NEXT_PUBLIC_DATABRICKS_HOST=${DATABRICKS_HOST}
 EOF
@@ -687,6 +698,7 @@ EOF
     echo ""
     echo -e "${CYAN}📋 Your Workshop Resources:${NC}"
     echo "   • Catalog: ${WORKSHOP_CATALOG}"
+    echo "   • Schema: ${WORKSHOP_SCHEMA}"
     echo "   • MCP App Name (for Step 8): mcp-custom-server-${CLEAN_PREFIX}"
     echo ""
     echo -e "${CYAN}🚀 Next Steps:${NC}"
