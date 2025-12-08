@@ -822,30 +822,42 @@ def list_schemas(catalog_name: str) -> dict:
               </div>
             </div>
 
-            <h3 className="text-xl font-bold text-slate-900 mt-8">Step 2: Test Locally with Your Workshop Catalog</h3>
+            <h3 className="text-xl font-bold text-slate-900 mt-8">Step 2: Test Locally with MCP Inspector</h3>
             <p className="text-slate-700 mb-4">
-              Now test your new tool locally with the catalog created during your workshop setup:
+              Now test your new tool locally using the MCP Inspector to connect to your server:
             </p>
 
             <CodeBlock
               language="bash"
-              title="Terminal - Test with your workshop catalog"
+              title="Terminal - Start your MCP server"
               code={`# Get your workshop catalog name from the setup
 cd custom-mcp-template
 source ../.env.local
 echo "Your workshop catalog: $WORKSHOP_CATALOG"
 
 # Make sure the server is running
-uv run uvicorn custom_server.app:app --reload --host 0.0.0.0 --port 8000
-
-# In another terminal, test the tool (replace with your actual catalog name)
-curl -X POST http://localhost:8000/mcp/tools/call \\
-  -H "Content-Type: application/json" \\
-  -d '{"name": "list_schemas", "arguments": {"catalog_name": "mcp_workshop_john_doe"}}'`}
+uv run uvicorn custom_server.app:app --reload --host 0.0.0.0 --port 8000`}
             />
 
+            <CodeBlock
+              language="bash"
+              title="Terminal - Launch MCP Inspector (in a new terminal)"
+              code={`npx @modelcontextprotocol/inspector http://localhost:8000/mcp`}
+            />
+
+            <InfoBox type="info" title="Configure the Inspector">
+              <p className="mb-3">Once the MCP Inspector opens in your browser:</p>
+              <ol className="list-decimal list-inside space-y-2 text-sm">
+                <li>Make sure <strong>Transport Type</strong> is set to <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs">StreamableHTTP</code></li>
+                <li>Verify the <strong>URL</strong> is <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs">http://localhost:8000/mcp</code></li>
+                <li>Click <strong>Connect</strong></li>
+                <li>Once connected, you'll see all available tools including <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs">list_schemas</code></li>
+                <li>Click on <strong>list_schemas</strong> and test it with your catalog name (e.g., <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs">mcp_workshop_john_doe</code>)</li>
+              </ol>
+            </InfoBox>
+
             <InfoBox type="success" title="Expected Result">
-              <p className="mb-2">You should see output like this:</p>
+              <p className="mb-2">After calling the tool, you should see output like this in the Inspector:</p>
               <CodeBlock
                 language="json"
                 code={`{
