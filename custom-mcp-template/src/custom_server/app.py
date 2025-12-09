@@ -176,41 +176,6 @@ def execute_dbsql(
         return {'success': False, 'error': str(e)}
 
 
-@mcp.tool()
-def list_schemas(catalog_name: str) -> dict:
-    """List all schemas in a Unity Catalog catalog.
-    
-    Args:
-        catalog_name: Name of the catalog to list schemas from
-    
-    Returns:
-        Dictionary with schema information including name, catalog, owner, and comment
-    
-    Example:
-        list_schemas("mcp_workshop_john_doe") -> Shows all schemas in your workshop catalog
-    """
-    try:
-        w = get_workspace_client()
-        schemas = []
-        
-        for schema in w.schemas.list(catalog_name=catalog_name):
-            schemas.append({
-                'name': schema.name,
-                'full_name': schema.full_name,
-                'catalog': schema.catalog_name,
-                'owner': schema.owner,
-                'comment': schema.comment or 'No description'
-            })
-        
-        return {
-            'success': True,
-            'schemas': schemas,
-            'count': len(schemas),
-            'message': f'Found {len(schemas)} schema(s) in catalog {catalog_name}'
-        }
-    except Exception as e:
-        return {'success': False, 'error': str(e)}
-
 # ============================================================================
 # LOAD PROMPTS FROM MARKDOWN FILES
 # ============================================================================
