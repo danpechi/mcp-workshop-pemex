@@ -5,12 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "serve out -l 8000",
+    "start:next": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "autoprefixer": "^10.4.21",
     "next": "15.5.4",
+    "serve": "^14.2.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
