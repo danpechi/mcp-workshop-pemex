@@ -13,7 +13,7 @@
 # MAGIC from datetime import datetime, timedelta
 # MAGIC 
 # MAGIC # Get parameters
-# MAGIC catalog_name = dbutils.widgets.get("catalog_name") if "dbutils" in globals() else "mcp_workshop"
+# MAGIC catalog_name = "mcp_workshop"
 # MAGIC 
 # MAGIC print(f"Setting up sample data in catalog: {catalog_name}")
 # MAGIC 
